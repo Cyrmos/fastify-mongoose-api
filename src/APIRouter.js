@@ -185,6 +185,9 @@ class APIRouter {
 
 		let docs = await query.find().exec();
 		ret.items = await this.arrayOfDocsToAPIResponse(docs, request);
+		
+		ret.items = ret.items.filter((i) => i !== null);
+		ret.total = ret.items.length;
 
 		return ret;
 	}

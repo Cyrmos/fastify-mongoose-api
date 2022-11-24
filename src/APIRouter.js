@@ -263,7 +263,9 @@ class APIRouter {
       reply.callNotFound();
     } else {
       await this.populateIfNeeded(request, doc);
-      let ret = await this.docToAPIResponse(doc, request);
+      let ret = {
+        items: await this.docToAPIResponse(doc, request),
+      };
       reply.send(ret);
     }
   }

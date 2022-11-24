@@ -298,7 +298,7 @@ class APIRouter {
         parsedMatch[key][op] = new Date(condition);
       }
     }
-
+    console.log([parsedMatch, ...aggregate]);
     let ret = {
       items: await this._model.aggregate([parsedMatch, ...aggregate]).exec(),
     };

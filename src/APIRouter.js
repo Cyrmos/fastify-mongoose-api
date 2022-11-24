@@ -31,6 +31,7 @@ class APIRouter {
     let path = this._path;
     this._fastify.get(path, {}, this.routeHandler("routeList"));
     this._fastify.post(path, {}, this.routeHandler("routePost"));
+    this._fastify.post(path + "/aggregate", {}, this.routeHandler("routeAggregate"));
     this._fastify.get(path + "/:id", {}, this.routeHandler("routeGet"));
     this._fastify.put(path + "/:id", {}, this.routeHandler("routePut"));
     this._fastify.patch(path + "/:id", {}, this.routeHandler("routePut"));
@@ -285,6 +286,11 @@ class APIRouter {
       let ret = await this.docToAPIResponse(doc, request);
       reply.send(ret);
     }
+  }
+
+  async routeAggregate(request, reply) {
+    let ret = await this._model.aggregate(request.body).exec();
+    reply.send(ret);
   }
 
   async routeDelete(request, reply) {

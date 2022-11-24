@@ -289,8 +289,18 @@ class APIRouter {
   }
 
   async routeAggregate(request, reply) {
+    let { match, aggregate } = request.body;
+
+    let parsedMatch = { $match: {} };
+    for (let [key, conditions] of Object.entries(match)) {
+      parsedMatch[key] = {};
+      for (let [op, condition] of Object.entries(conditions)) {
+        parsedMatch[key][op] = new Date(condition);
+      }
+    }
+
     let ret = {
-      items: await this._model.aggregate(request.body).exec(),
+      items: await this._model.aggregate([parsedMatch, ...aggregate]).exec(),
     };
     reply.send(ret);
   }

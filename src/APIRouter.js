@@ -293,12 +293,11 @@ class APIRouter {
 
     let parsedMatch = { $match: {} };
     for (let [key, conditions] of Object.entries(match)) {
-      parsedMatch[key] = {};
+      parsedMatch["$match"][key] = {};
       for (let [op, condition] of Object.entries(conditions)) {
-        parsedMatch[key][op] = new Date(condition);
+        parsedMatch["$match"][key][op] = new Date(condition);
       }
     }
-    console.log([parsedMatch, ...aggregate]);
     let ret = {
       items: await this._model.aggregate([parsedMatch, ...aggregate]).exec(),
     };

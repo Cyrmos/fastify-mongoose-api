@@ -323,8 +323,6 @@ class APIRouter {
       pipeline.push(stage);
     }
 
-    console.log(JSON.stringify(pipeline, 0, 2));
-
     let ret = {
       items: await this._model.aggregate(pipeline).exec(),
     };

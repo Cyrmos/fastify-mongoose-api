@@ -7,14 +7,18 @@ const parseAggregate = (aggregate) => {
         if (!Array.isArray(value)) parseAggregate(value);
         else {
           for (const [index, arrayValue] of value.entries()) {
-            if (typeof arrayValue === "object") parseAggregate(arrayValue);
-            else {
-              const isArrayValueDate =
-                typeof arrayValue === "string" ? arrayValue.includes("$date") : false;
-              if (isArrayValueDate) {
-                const arrayDateString = arrayValue.replace("$date", "");
-                aggregate[key][index] = new Date(arrayDateString);
-              } else aggregate[key][index] = arrayValue;
+            if (arrayValue !== null) {
+              if (typeof arrayValue === "object") parseAggregate(arrayValue);
+              else {
+                const isArrayValueDate =
+                  typeof arrayValue === "string" ? arrayValue.includes("$date") : false;
+                if (isArrayValueDate) {
+                  const arrayDateString = arrayValue.replace("$date", "");
+                  aggregate[key][index] = new Date(arrayDateString);
+                } else aggregate[key][index] = arrayValue;
+              }
+            } else {
+              aggregate[key][index] = arrayValue;
             }
           }
         }

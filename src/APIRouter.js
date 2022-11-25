@@ -2,16 +2,18 @@ const debug = require("debug")("fastify-mongoose-api");
 
 const parseAggregate = (aggregate) => {
   for (const [key, value] of Object.entries(aggregate)) {
-    if (typeof value === "object") {
-      if (!Array.isArray(value)) parseAggregate(aggregate[key]);
-      else aggregate[key] = value;
-    } else {
-      const isDate = typeof value === "string" ? value.includes("$date") : false;
-      if (isDate) {
-        const dateString = value.replace("$date", "");
-        aggregate[key] = new Date(dateString);
-      } else aggregate[key] = value;
-    }
+    if (value !== null) {
+      if (typeof value === "object") {
+        if (!Array.isArray(value)) parseAggregate(aggregate[key]);
+        else aggregate[key] = value;
+      } else {
+        const isDate = typeof value === "string" ? value.includes("$date") : false;
+        if (isDate) {
+          const dateString = value.replace("$date", "");
+          aggregate[key] = new Date(dateString);
+        } else aggregate[key] = value;
+      }
+    } else aggregate[key] = value;
   }
 };
 class APIRouter {

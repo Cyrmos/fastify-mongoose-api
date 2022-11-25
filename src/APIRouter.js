@@ -326,8 +326,10 @@ class APIRouter {
 
     const pipeline = [];
     for (let stage of request.body) {
-      pipeline.push(parseAggregate(stage));
+      parseAggregate(stage);
+      pipeline.push(stage);
     }
+    console.log(pipeline);
 
     let ret = {
       items: await this._model.aggregate(pipeline).exec(),

@@ -1,5 +1,18 @@
 const debug = require("debug")("fastify-mongoose-api");
 
+const parseAggregate = (aggregate) => {
+  for (const [key, value] of Object.entries(aggregate)) {
+    if (typeof value === "object") {
+      parseAggregate(aggregate[key]);
+    } else {
+      const isDate = value.includes("$date");
+      if (isDate) {
+        const dateString = value.replace("$date", "");
+        aggregate[key] = new Date(dateString);
+      } else aggregate[key] = value;
+    }
+  }
+};
 class APIRouter {
   constructor(params = {}) {
     this._models = params.models || [];
@@ -289,21 +302,34 @@ class APIRouter {
   }
 
   async routeAggregate(request, reply) {
-    let { match, aggregate } = request.body;
+    // let { match, aggregate } = request.body;
 
-    const parsedMatch = {};
-    for (const [key, conditions] of Object.entries(match)) {
-      parsedMatch[key] = {};
-      for (const [op, condition] of Object.entries(conditions)) {
-        const isDate = condition.includes("$date");
-        if (isDate) {
-          const dateString = condition.replace("$date", "");
-          parsedMatch[key][op] = new Date(dateString);
-        } else parsedMatch[key][op] = condition;
-      }
+    // const pipeline = [];
+
+    // if (match) {
+    //   const parsedMatch = {};
+    //   for (const [key, conditions] of Object.entries(match)) {
+    //     parsedMatch[key] = {};
+    //     for (const [op, condition] of Object.entries(conditions)) {
+    //       const isDate = condition.includes("$date");
+    //       if (isDate) {
+    //         const dateString = condition.replace("$date", "");
+    //         parsedMatch[key][op] = new Date(dateString);
+    //       } else parsedMatch[key][op] = condition;
+    //     }
+    //   }
+    //   pipeline.push({ $match: parsedMatch });
+    // }
+
+    // pipeline.push(...aggregate);
+
+    const pipeline = [];
+    for (let stage of request.body) {
+      pipeline.push(parseAggregate(stage));
     }
+
     let ret = {
-      items: await this._model.aggregate([{ $match: parsedMatch }, ...aggregate]).exec(),
+      items: await this._model.aggregate(pipeline).exec(),
     };
     reply.send(ret);
   }

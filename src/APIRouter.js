@@ -303,33 +303,11 @@ class APIRouter {
   }
 
   async routeAggregate(request, reply) {
-    // let { match, aggregate } = request.body;
-
-    // const pipeline = [];
-
-    // if (match) {
-    //   const parsedMatch = {};
-    //   for (const [key, conditions] of Object.entries(match)) {
-    //     parsedMatch[key] = {};
-    //     for (const [op, condition] of Object.entries(conditions)) {
-    //       const isDate = condition.includes("$date");
-    //       if (isDate) {
-    //         const dateString = condition.replace("$date", "");
-    //         parsedMatch[key][op] = new Date(dateString);
-    //       } else parsedMatch[key][op] = condition;
-    //     }
-    //   }
-    //   pipeline.push({ $match: parsedMatch });
-    // }
-
-    // pipeline.push(...aggregate);
-
     const pipeline = [];
     for (let stage of request.body) {
       parseAggregate(stage);
       pipeline.push(stage);
     }
-    console.log(pipeline);
 
     let ret = {
       items: await this._model.aggregate(pipeline).exec(),

@@ -2,9 +2,9 @@ const debug = require("debug")("fastify-mongoose-api");
 
 const parseAggregate = (aggregate) => {
   for (const [key, value] of Object.entries(aggregate)) {
-    console.log(key, value);
     if (typeof value === "object") {
-      parseAggregate(aggregate[key]);
+      if (!Array.isArray(value)) parseAggregate(aggregate[key]);
+      else aggregate[key] = value;
     } else {
       const isDate = value.includes("$date");
       if (isDate) {

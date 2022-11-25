@@ -291,15 +291,19 @@ class APIRouter {
   async routeAggregate(request, reply) {
     let { match, aggregate } = request.body;
 
-    let parsedMatch = { $match: {} };
-    for (let [key, conditions] of Object.entries(match)) {
-      parsedMatch["$match"][key] = {};
-      for (let [op, condition] of Object.entries(conditions)) {
-        parsedMatch["$match"][key][op] = new Date(condition);
+    const parsedMatch = {};
+    for (const [key, conditions] of Object.entries(match)) {
+      parsedMatch[key] = {};
+      for (const [op, condition] of Object.entries(conditions)) {
+        const isDate = condition.includes("$date");
+        if (isDate) {
+          const dateString = condition.replace("$date", "");
+          parsedMatch[key][op] = new Date(dateString);
+        } else parsedMatch[key][op] = condition;
       }
     }
     let ret = {
-      items: await this._model.aggregate([parsedMatch, ...aggregate]).exec(),
+      items: await this._model.aggregate([{ $match: parsedMatch }, ...aggregate]).exec(),
     };
     reply.send(ret);
   }

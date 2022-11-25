@@ -6,8 +6,7 @@ const parseAggregate = (aggregate) => {
       if (!Array.isArray(value)) parseAggregate(aggregate[key]);
       else aggregate[key] = value;
     } else {
-      console.log(value);
-      const isDate = value.includes("$date");
+      const isDate = typeof value === "string" ? value.includes("$date") : false;
       if (isDate) {
         const dateString = value.replace("$date", "");
         aggregate[key] = new Date(dateString);

@@ -4,8 +4,13 @@ const parseAggregate = (aggregate) => {
   for (const [key, value] of Object.entries(aggregate)) {
     if (value !== null) {
       if (typeof value === "object") {
-        if (!Array.isArray(value)) parseAggregate(aggregate[key]);
-        else aggregate[key] = value;
+        if (!Array.isArray(value)) parseAggregate(value);
+        else {
+          for (const [index, arrayValue] of value.entries()) {
+            if (typeof arrayValue === "object") parseAggregate(arrayValue);
+            else aggregate[key][index] = arrayValue;
+          }
+        }
       } else {
         const isDate = typeof value === "string" ? value.includes("$date") : false;
         if (isDate) {
@@ -310,6 +315,8 @@ class APIRouter {
       parseAggregate(stage);
       pipeline.push(stage);
     }
+
+    console.log(pipeline);
 
     let ret = {
       items: await this._model.aggregate(pipeline).exec(),

@@ -2,6 +2,7 @@ const debug = require("debug")("fastify-mongoose-api");
 
 const parseAggregate = (aggregate) => {
   for (const [key, value] of Object.entries(aggregate)) {
+    console.log(key, value);
     if (typeof value === "object") {
       parseAggregate(aggregate[key]);
     } else {

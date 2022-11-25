@@ -1,37 +1,4 @@
 const debug = require("debug")("fastify-mongoose-api");
-
-const parseAggregate = (aggregate) => {
-  for (const [key, value] of Object.entries(aggregate)) {
-    if (value !== null) {
-      if (typeof value === "object") {
-        if (!Array.isArray(value)) parseAggregate(value);
-        else {
-          for (const [index, arrayValue] of value.entries()) {
-            if (arrayValue !== null) {
-              if (typeof arrayValue === "object") parseAggregate(arrayValue);
-              else {
-                const isArrayValueDate =
-                  typeof arrayValue === "string" ? arrayValue.includes("<date>") : false;
-                if (isArrayValueDate) {
-                  const arrayDateString = arrayValue.replace("<date>", "");
-                  aggregate[key][index] = new Date(arrayDateString);
-                } else aggregate[key][index] = arrayValue;
-              }
-            } else {
-              aggregate[key][index] = arrayValue;
-            }
-          }
-        }
-      } else {
-        const isDate = typeof value === "string" ? value.includes("<date>") : false;
-        if (isDate) {
-          const dateString = value.replace("<date>", "");
-          aggregate[key] = new Date(dateString);
-        } else aggregate[key] = value;
-      }
-    } else aggregate[key] = value;
-  }
-};
 class APIRouter {
   constructor(params = {}) {
     this._models = params.models || [];
@@ -321,16 +288,8 @@ class APIRouter {
   }
 
   async routeAggregate(request, reply) {
-    const pipeline = [];
-    for (let stage of request.body) {
-      parseAggregate(stage);
-      pipeline.push(stage);
-    }
-
-    console.log(pipeline[0]);
-
     let ret = {
-      items: await this._model.aggregate(pipeline).exec(),
+      items: await this._model.aggregate(request.body).exec(),
     };
     reply.send(ret);
   }

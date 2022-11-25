@@ -11,9 +11,9 @@ const parseAggregate = (aggregate) => {
               if (typeof arrayValue === "object") parseAggregate(arrayValue);
               else {
                 const isArrayValueDate =
-                  typeof arrayValue === "string" ? arrayValue.includes("$date") : false;
+                  typeof arrayValue === "string" ? arrayValue.includes("<date>") : false;
                 if (isArrayValueDate) {
-                  const arrayDateString = arrayValue.replace("$date", "");
+                  const arrayDateString = arrayValue.replace("<date>", "");
                   aggregate[key][index] = new Date(arrayDateString);
                 } else aggregate[key][index] = arrayValue;
               }
@@ -23,9 +23,9 @@ const parseAggregate = (aggregate) => {
           }
         }
       } else {
-        const isDate = typeof value === "string" ? value.includes("$date") : false;
+        const isDate = typeof value === "string" ? value.includes("<date>") : false;
         if (isDate) {
-          const dateString = value.replace("$date", "");
+          const dateString = value.replace("<date>", "");
           aggregate[key] = new Date(dateString);
         } else aggregate[key] = value;
       }
@@ -326,8 +326,6 @@ class APIRouter {
       parseAggregate(stage);
       pipeline.push(stage);
     }
-
-    console.log(JSON.stringify(pipeline, 0, 2));
 
     let ret = {
       items: await this._model.aggregate(pipeline).exec(),

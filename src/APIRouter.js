@@ -289,7 +289,10 @@ class APIRouter {
 
   async routeAggregate(request, reply) {
     let ret = {
-      items: await this._model.aggregate(request.body).exec(),
+      items: await this._model
+        .aggregate(request.body)
+        .cursor({ batchSize: 2500, async: true })
+        .exec(),
     };
     reply.send(ret);
   }

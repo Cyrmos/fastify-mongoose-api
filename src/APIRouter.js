@@ -32,10 +32,10 @@ class APIRouter {
     this._fastify.post(path, {}, this.routeHandler("routePost"));
     this._fastify.post(path + "/aggregate", {}, this.routeHandler("routeAggregate"));
     this._fastify.post(path + "/bulk", {}, this.routeHandler("routeBulkInsert"));
+    this._fastify.post(path + "/delete", {}, this.routeHandler("routeBulkDelete"));
     this._fastify.get(path + "/:id", {}, this.routeHandler("routeGet"));
     this._fastify.put(path + "/:id", {}, this.routeHandler("routePut"));
     this._fastify.patch(path + "/:id", {}, this.routeHandler("routePut"));
-    this._fastify.delete(path + "/bulk", {}, this.routeHandler("routeBulkDelete"));
     this._fastify.delete(path + "/:id", {}, this.routeHandler("routeDelete"));
 
     /// check if there's apiSubRoutes method on the model

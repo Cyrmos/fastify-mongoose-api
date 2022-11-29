@@ -324,7 +324,8 @@ class APIRouter {
   }
 
   async routeBulkDelete(request, reply) {
-    await this._model.deleteMany(request.body);
+    console.log(request.body);
+    // await this._model.deleteMany(request.body);
     reply.send({ success: true });
   }
 

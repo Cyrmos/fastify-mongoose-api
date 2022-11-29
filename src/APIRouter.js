@@ -36,7 +36,7 @@ class APIRouter {
     this._fastify.put(path + "/:id", {}, this.routeHandler("routePut"));
     this._fastify.patch(path + "/:id", {}, this.routeHandler("routePut"));
     this._fastify.delete(path + "/bulk", {}, this.routeHandler("routeDelete"));
-    this._fastify.delete(path + "/:id", {}, this.routeHandler("routeDelete"));
+    this._fastify.delete(path + "/:id", {}, this.routeHandler("routeBulkDelete"));
 
     /// check if there's apiSubRoutes method on the model
     if (this._model["apiSubRoutes"]) {
@@ -321,6 +321,11 @@ class APIRouter {
       await doc.apiDelete(request);
       reply.send({ success: true });
     }
+  }
+
+  async routeBulkDelete(request, reply) {
+    await this._model.deleteMany(request.body);
+    reply.send({ success: true });
   }
 
   async arrayOfDocsToAPIResponse(docs, request) {

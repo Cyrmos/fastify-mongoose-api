@@ -32,6 +32,7 @@ class APIRouter {
     this._fastify.post(path, {}, this.routeHandler("routePost"));
     this._fastify.post(path + "/aggregate", {}, this.routeHandler("routeAggregate"));
     this._fastify.post(path + "/bulk", {}, this.routeHandler("routeBulkInsert"));
+    this._fastify.post(path + "/raw", {}, this.routeHandler("routePostRaw"));
     this._fastify.post(path + "/delete", {}, this.routeHandler("routeBulkDelete"));
     this._fastify.get(path + "/:id", {}, this.routeHandler("routeGet"));
     this._fastify.put(path + "/:id", {}, this.routeHandler("routePut"));
@@ -246,6 +247,14 @@ class APIRouter {
   async routePost(request, reply) {
     let doc = await this._model.apiPost(request.body, request);
     await this.populateIfNeeded(request, doc);
+
+    reply.send(await this.docToAPIResponse(doc, request));
+  }
+
+  async routePostRaw(request, reply) {
+    const { filter, update } = request.body;
+    let doc = await this._model.updateOne(filter, update);
+    // await this.populateIfNeeded(request, doc);
 
     reply.send(await this.docToAPIResponse(doc, request));
   }

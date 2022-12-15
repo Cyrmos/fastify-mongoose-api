@@ -252,8 +252,8 @@ class APIRouter {
   }
 
   async routePostRaw(request, reply) {
-    const { filter, update } = request.body;
-    let doc = await this._model.updateOne(filter, update);
+    const { filter, update, options } = request.body;
+    let doc = await this._model.updateOne(filter, update, options);
     // await this.populateIfNeeded(request, doc);
 
     reply.send(await this.docToAPIResponse(doc, request));

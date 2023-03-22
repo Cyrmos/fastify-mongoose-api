@@ -29,6 +29,7 @@ class APIRouter {
   setUpRoutes() {
     let path = this._path;
     this._fastify.get(path, {}, this.routeHandler("routeList"));
+    this._fastify.get(path + "/search", {}, this.routeHandler("routeSearch"));
     this._fastify.post(path, {}, this.routeHandler("routePost"));
     this._fastify.post(path + "/aggregate", {}, this.routeHandler("routeAggregate"));
     this._fastify.post(path + "/bulk", {}, this.routeHandler("routeBulkInsert"));
@@ -143,6 +144,7 @@ class APIRouter {
         "$nor",
         "$or",
         "$exists",
+        "$regex",
       ];
       const sanitize = function (v) {
         if (v instanceof Object) {

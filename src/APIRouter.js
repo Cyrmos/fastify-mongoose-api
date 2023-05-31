@@ -190,7 +190,13 @@ class APIRouter {
     if (populate) {
       if (Array.isArray(populate)) {
         for (let pop of populate) {
-          query.populate(pop);
+          if (pop.includes(".")) {
+            const [main, sub] = pop.split(".");
+            query.populate({
+              path: main,
+              populate: sub,
+            });
+          } else query.populate(pop);
         }
       } else {
         query.populate(populate);

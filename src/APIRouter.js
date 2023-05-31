@@ -190,13 +190,7 @@ class APIRouter {
     if (populate) {
       if (Array.isArray(populate)) {
         for (let pop of populate) {
-          if (pop.includes(".")) {
-            const [main, sub] = pop.split(".");
-            query.populate({
-              path: main,
-              populate: sub,
-            });
-          } else query.populate(pop);
+          query.populate(pop);
         }
       } else {
         query.populate(populate);
@@ -260,13 +254,25 @@ class APIRouter {
   }
 
   async routePostRaw(request, reply) {
-    const { filter, update, options, multi = false } = request.body;
-    let doc;
-    if (!multi) doc = await this._model.updateOne(filter, update, options);
-    else doc = await this._model.updateMany(filter, update, options);
+    const { filter, update, options, populate, multi = false } = request.body;
+    if (update) {
+      if (!multi) {
+        let doc = await this._model.updateOne(filter, update, options);
+        reply.send(await this.docToAPIResponse(doc, request));
+      } else {
+        let docs = await this._model.updateMany(filter, update, options);
+        reply.send(await this.arrayOfDocsToAPIResponse(docs, request));
+      }
+    } else {
+      if (!multi) {
+        let doc = await this._model.findOne(filter).populate(populate);
+        reply.send(await this.docToAPIResponse(doc, request));
+      } else {
+        let docs = await this._model.find(filter).populate(populate);
+        reply.send(await this.arrayOfDocsToAPIResponse(docs, request));
+      }
+    }
     // await this.populateIfNeeded(request, doc);
-
-    reply.send(await this.docToAPIResponse(doc, request));
   }
 
   async routeBulkInsert(request, reply) {

@@ -261,7 +261,8 @@ class APIRouter {
         reply.send(await this.docToAPIResponse(doc, request));
       } else {
         let docs = await this._model.updateMany(filter, update, options);
-        reply.send(await this.arrayOfDocsToAPIResponse(docs, request));
+        // reply.send(await this.arrayOfDocsToAPIResponse(docs, request));
+        reply.send(docs);
       }
     } else {
       if (!multi) {

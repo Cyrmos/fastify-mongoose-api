@@ -265,13 +265,27 @@ class APIRouter {
         reply.send(docs);
       }
     } else {
-      if (!multi) {
-        let doc = await this._model.findOne(filter).populate(populate);
-        reply.send(await this.docToAPIResponse(doc, request));
-      } else {
-        let docs = await this._model.find(filter).populate(populate);
-        reply.send(await this.arrayOfDocsToAPIResponse(docs, request));
+      let query = !multi ? this._model.findOne(filter) : this._model.find(filter);
+      if (Array.isArray(populate)) {
+        for (let path of populate) {
+          query = query.populate(path);
+        }
       }
+
+      let doc = await query.exec();
+      reply.send(
+        !multi
+          ? await this.docToAPIResponse(doc, request)
+          : await this.arrayOfDocsToAPIResponse(docs, request)
+      );
+
+      // if (!multi) {
+      //   let doc = await this._model.findOne(filter).populate(populate);
+      //   reply.send(await this.docToAPIResponse(doc, request));
+      // } else {
+      //   let docs = await this._model.find(filter).populate(populate);
+      //   reply.send(await this.arrayOfDocsToAPIResponse(docs, request));
+      // }
     }
     // await this.populateIfNeeded(request, doc);
   }

@@ -272,10 +272,10 @@ class APIRouter {
         }
       }
 
-      let doc = await query.exec();
+      let docs = await query.exec();
       reply.send(
         !multi
-          ? await this.docToAPIResponse(doc, request)
+          ? await this.docToAPIResponse(docs, request)
           : await this.arrayOfDocsToAPIResponse(docs, request)
       );
 

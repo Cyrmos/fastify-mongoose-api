@@ -273,11 +273,12 @@ class APIRouter {
       }
 
       let docs = await query.exec();
-      reply.send(
-        !multi
-          ? await this.docToAPIResponse(docs, request)
-          : await this.arrayOfDocsToAPIResponse(docs, request)
-      );
+      reply.send(docs);
+      // reply.send(
+      //   !multi
+      //     ? await this.docToAPIResponse(docs, request)
+      //     : await this.arrayOfDocsToAPIResponse(docs, request)
+      // );
 
       // if (!multi) {
       //   let doc = await this._model.findOne(filter).populate(populate);

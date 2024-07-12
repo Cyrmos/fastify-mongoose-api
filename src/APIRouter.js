@@ -254,7 +254,7 @@ class APIRouter {
   }
 
   async routePostRaw(request, reply) {
-    const { filter, update, options, populate, multi = false } = request.body;
+    const { sort, filter, update, options, populate, multi = false } = request.body;
     if (update) {
       if (!multi) {
         let doc = await this._model.updateOne(filter, update, options);
@@ -273,6 +273,11 @@ class APIRouter {
       }
 
       let docs = await query.exec();
+
+      if (sort) {
+        docs.sort(sort);
+      }
+
       reply.send(docs);
       // reply.send(
       //   !multi

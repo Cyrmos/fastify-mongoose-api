@@ -272,11 +272,11 @@ class APIRouter {
         }
       }
 
-      let docs = await query.exec();
-
       if (sort) {
-        docs.sort(sort);
+        query = query.sort(sort);
       }
+
+      let docs = await query.exec();
 
       reply.send(docs);
       // reply.send(
